@@ -11,6 +11,7 @@ import (
 )
 
 func main() {
+	//stm, err := streamject.NewJSON("./owner.buildlist.json")
 	stm, err := streamject.NewMsgPack("./owner.buildlist.msgpk")
 	if err != nil {
 		panic(err)

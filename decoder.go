@@ -37,10 +37,10 @@ func (l *Line) Index() int64 {
 }
 
 func (l *Line) Decode(f interface{}) error {
-	return msgpack.Unmarshal(l.body, &f)
+	return l.unmarshal(l.body, &f)
 }
 func (s *Stream) Append(v interface{}) error {
-	marshaled, err := msgpack.Marshal(v)
+	marshaled, err := s.marshal(v)
 	if err != nil {
 		return err
 	}
