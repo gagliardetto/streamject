@@ -1,6 +1,7 @@
 package streamject
 
 import (
+	"encoding/base64"
 	"encoding/json"
 
 	"github.com/gagliardetto/listfile"
@@ -19,8 +20,24 @@ type UnmarshalFunc func(data []byte, v interface{}) error
 func getJSONFuncs() (MarshalFunc, UnmarshalFunc) {
 	return json.Marshal, json.Unmarshal
 }
+
 func getMsgPackFuncs() (MarshalFunc, UnmarshalFunc) {
-	return msgpack.Marshal, msgpack.Unmarshal
+
+	return func(v interface{}) ([]byte, error) {
+			marshaled, err := msgpack.Marshal(v)
+			if err != nil {
+				return nil, err
+			}
+			encoded := base64.StdEncoding.EncodeToString(marshaled)
+			return []byte(encoded), nil
+		}, func(data []byte, v interface{}) error {
+			decoded, err := base64.StdEncoding.DecodeString(string(data))
+			if err != nil {
+				return err
+			}
+
+			return msgpack.Unmarshal(decoded, v)
+		}
 }
 
 type Line struct {

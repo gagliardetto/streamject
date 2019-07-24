@@ -11,8 +11,8 @@ import (
 )
 
 func main() {
-	//stm, err := streamject.NewJSON("./owner.buildlist.json")
-	stm, err := streamject.NewMsgPack("./owner.buildlist.msgpk")
+	stm, err := streamject.NewJSON("./owner.buildlist.json")
+	//stm, err := streamject.NewMsgPack("./owner.buildlist.msgpk")
 	if err != nil {
 		panic(err)
 	}
@@ -20,7 +20,7 @@ func main() {
 
 	start := time.Now()
 
-	if false {
+	if true {
 		for i := 0; i < 600000; i++ {
 			newItem := &Message{
 				Name: RandomString(256),
@@ -35,7 +35,7 @@ func main() {
 
 	newItem := &Message{
 		Name: "hello",
-		Text: "world",
+		Text: "world\nwooooo",
 	}
 	err = stm.Append(newItem)
 	if err != nil {
