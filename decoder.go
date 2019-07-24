@@ -1,11 +1,15 @@
 package streamject
 
 import (
-	"encoding/base64"
-	"encoding/json"
-
 	"github.com/gagliardetto/listfile"
-	"github.com/vmihailenco/msgpack"
+	"github.com/json-iterator/go"
+)
+
+var (
+	jsIterConfig = jsoniter.Config{
+		EscapeHTML: true,
+		TagKey:     "msgpack",
+	}.Froze()
 )
 
 type Stream struct {
@@ -18,26 +22,7 @@ type MarshalFunc func(v interface{}) ([]byte, error)
 type UnmarshalFunc func(data []byte, v interface{}) error
 
 func getJSONFuncs() (MarshalFunc, UnmarshalFunc) {
-	return json.Marshal, json.Unmarshal
-}
-
-func getMsgPackFuncs() (MarshalFunc, UnmarshalFunc) {
-
-	return func(v interface{}) ([]byte, error) {
-			marshaled, err := msgpack.Marshal(v)
-			if err != nil {
-				return nil, err
-			}
-			encoded := base64.StdEncoding.EncodeToString(marshaled)
-			return []byte(encoded), nil
-		}, func(data []byte, v interface{}) error {
-			decoded, err := base64.StdEncoding.DecodeString(string(data))
-			if err != nil {
-				return err
-			}
-
-			return msgpack.Unmarshal(decoded, v)
-		}
+	return jsIterConfig.Marshal, jsIterConfig.Unmarshal
 }
 
 type Line struct {
@@ -61,7 +46,7 @@ func (s *Stream) Append(v interface{}) error {
 	if err != nil {
 		return err
 	}
-	return s.list.Append(string(marshaled))
+	return s.list.AppendBytes(marshaled)
 }
 
 func (s *Stream) Iterate(callback func(line *Line) bool) error {
@@ -108,14 +93,7 @@ func NewJSON(path string) (*Stream, error) {
 		un,
 	)
 }
-func NewMsgPack(path string) (*Stream, error) {
-	ma, un := getMsgPackFuncs()
-	return newStream(
-		path,
-		ma,
-		un,
-	)
-}
+
 func newStream(
 	path string,
 	marshal MarshalFunc,
