@@ -110,3 +110,18 @@ func newStream(
 	}
 	return str, nil
 }
+
+func (s *Stream) CreateIndexOnInt(indexName string, intColGetter func(line *Line) int) error {
+	return s.list.CreateIndexOnInt(indexName, func(val []byte) int {
+		line := &Line{
+			body:      val,
+			unmarshal: s.unmarshal,
+			// TODO: add line index, or does not matter?
+		}
+
+		return intColGetter(line)
+	})
+}
+func (s *Stream) HasIntByIndex(indexName string, v int) bool {
+	return s.list.HasIntByIndex(indexName, v)
+}
