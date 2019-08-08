@@ -38,8 +38,14 @@ func (l *Line) Index() int64 {
 	return l.index
 }
 
+// Decode can be called only once
 func (l *Line) Decode(f interface{}) error {
-	return l.unmarshal(l.body, &f)
+	err := l.unmarshal(l.body, &f)
+	if err != nil {
+		return err
+	}
+	l.body = nil
+	return nil
 }
 func (s *Stream) Append(v interface{}) error {
 	marshaled, err := s.marshal(v)
