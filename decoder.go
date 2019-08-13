@@ -55,10 +55,10 @@ func (s *Stream) Append(v interface{}) error {
 	return s.list.AppendBytes(marshaled)
 }
 
-func (s *Stream) Iterate(callback func(line *Line) bool) error {
+func (s *Stream) Iterate(callback func(line Line) bool) error {
 	var index int64
 	return s.list.IterateLinesAsBytes(func(val []byte) bool {
-		line := &Line{
+		line := Line{
 			index:     index,
 			body:      val,
 			unmarshal: s.unmarshal,
@@ -105,7 +105,7 @@ func newStream(
 	marshal MarshalFunc,
 	unmarshal UnmarshalFunc,
 ) (*Stream, error) {
-	list, err := listfile.New(path)
+	list, err := listfile.NewWithoutIndex(path)
 	if err != nil {
 		return nil, err
 	}
@@ -117,9 +117,9 @@ func newStream(
 	return str, nil
 }
 
-func (s *Stream) CreateIndexOnInt(indexName string, intColGetter func(line *Line) int) error {
+func (s *Stream) CreateIndexOnInt(indexName string, intColGetter func(line Line) int) error {
 	return s.list.CreateIndexOnInt(indexName, func(val []byte) int {
-		return intColGetter(&Line{
+		return intColGetter(Line{
 			body:      val,
 			unmarshal: s.unmarshal,
 			// TODO: add line index, or does not matter?

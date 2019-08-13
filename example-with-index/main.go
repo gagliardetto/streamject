@@ -127,7 +127,7 @@ func main() {
 	start := time.Now()
 
 	if true {
-		for i := 0; i < 600000; i++ {
+		for i := 0; i < 1000000; i++ {
 			newItem := &CircleCIBuildPartialInfo{
 				BuildNum: i,
 			}
@@ -141,7 +141,7 @@ func main() {
 	fmt.Println("added all in:", time.Now().Sub(start))
 
 	start = time.Now()
-	err = stm.Iterate(func(line *streamject.Line) bool {
+	err = stm.Iterate(func(line streamject.Line) bool {
 		var msg CircleCIBuildPartialInfo
 		err := line.Decode(&msg)
 		if err != nil {
@@ -187,7 +187,7 @@ func HasCircleCIBuildPartialInfo(stm *streamject.Stream, buildID int) bool {
 
 	indexName := "circleci.BuildNum"
 
-	stm.CreateIndexOnInt(indexName, func(line *streamject.Line) int {
+	stm.CreateIndexOnInt(indexName, func(line streamject.Line) int {
 		var build CircleCIBuildPartialInfo
 		err := line.Decode(&build)
 		if err != nil {
