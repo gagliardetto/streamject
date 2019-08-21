@@ -126,12 +126,12 @@ func main() {
 
 	start := time.Now()
 
-	if true {
+	if false {
 		for i := 0; i < 1000000; i++ {
 			newItem := &CircleCIBuildPartialInfo{
 				BuildNum: i,
 			}
-			HasCircleCIBuildPartialInfo(stm, 2)
+			//HasCircleCIBuildPartialInfo(stm, 2)
 			err = stm.Append(newItem)
 			if err != nil {
 				panic(err)
@@ -164,6 +164,9 @@ func main() {
 	has = HasCircleCIBuildPartialInfo(stm, 3)
 	fmt.Println("has:", has)
 	has = HasCircleCIBuildPartialInfo(stm, 4)
+	fmt.Println("has:", has)
+
+	has = HasCircleCIBuildPartialInfo(stm, 99000000)
 	fmt.Println("has:", has)
 	// TODO:
 	// - parse line json.
