@@ -8,7 +8,9 @@ import (
 var (
 	jsIterConfig = jsoniter.Config{
 		EscapeHTML: true,
-		TagKey:     "msgpack",
+		// NOTE: using this TagKey because the payloads are in json and require their json tagkey to be complete;
+		// I want to use short versions to save space, so I have to use another TagKey here:
+		TagKey: "msgpack",
 	}.Froze()
 )
 
