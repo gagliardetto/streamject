@@ -5,15 +5,6 @@ import (
 	"github.com/json-iterator/go"
 )
 
-var (
-	jsIterConfig = jsoniter.Config{
-		EscapeHTML: true,
-		// NOTE: using this TagKey because the payloads are in json and require their json tagkey to be complete;
-		// I want to use short versions to save space, so I have to use another TagKey here:
-		TagKey: "msgpack",
-	}.Froze()
-)
-
 type Stream struct {
 	list      *listfile.ListFile
 	marshal   MarshalFunc
@@ -23,7 +14,14 @@ type Stream struct {
 type MarshalFunc func(v interface{}) ([]byte, error)
 type UnmarshalFunc func(data []byte, v interface{}) error
 
-func getJSONFuncs() (MarshalFunc, UnmarshalFunc) {
+func getJSONFuncs(customTagkey string) (MarshalFunc, UnmarshalFunc) {
+	jsIterConfig := jsoniter.Config{
+		//EscapeHTML: true,
+		// NOTE: using this TagKey because the payloads are in json and require their json tagkey to be complete;
+		// I want to use short versions to save space, so I have to use another TagKey here:
+		TagKey: customTagkey,
+	}.Froze()
+
 	return jsIterConfig.Marshal, jsIterConfig.Unmarshal
 }
 
@@ -94,14 +92,21 @@ func New(path string) (*Stream, error) {
 	return NewJSON(path)
 }
 func NewJSON(path string) (*Stream, error) {
-	ma, un := getJSONFuncs()
+	ma, un := getJSONFuncs("json")
 	return newStream(
 		path,
 		ma,
 		un,
 	)
 }
-
+func NewJSONWithCustomTagKey(path string, tagKey string) (*Stream, error) {
+	ma, un := getJSONFuncs(tagKey)
+	return newStream(
+		path,
+		ma,
+		un,
+	)
+}
 func newStream(
 	path string,
 	marshal MarshalFunc,
