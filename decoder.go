@@ -2,7 +2,7 @@ package streamject
 
 import (
 	"github.com/gagliardetto/listfile"
-	"github.com/json-iterator/go"
+	jsoniter "github.com/json-iterator/go"
 )
 
 type Stream struct {
@@ -29,6 +29,10 @@ type Line struct {
 	index     int64
 	body      []byte
 	unmarshal UnmarshalFunc
+}
+
+func (l *Line) Body() []byte {
+	return l.body
 }
 
 // Index returns the line number that this object
