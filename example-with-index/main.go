@@ -137,8 +137,8 @@ func main() {
 				panic(err)
 			}
 		}
+		fmt.Println("added all in:", time.Now().Sub(start))
 	}
-	fmt.Println("added all in:", time.Now().Sub(start))
 
 	start = time.Now()
 	err = stm.Iterate(func(line streamject.Line) bool {

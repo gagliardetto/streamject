@@ -77,19 +77,19 @@ func (s *Stream) Close() error {
 	return s.list.Close()
 }
 
-// Len returns the total size in bytes
+// Size returns the total size in bytes
 // of the stream.
-func (s *Stream) Len() int {
-	return s.list.Len()
+func (s *Stream) Size() int {
+	return s.list.Size()
 }
-func (s *Stream) LenInt64() int64 {
-	return s.list.LenInt64()
+func (s *Stream) SizeInt64() int64 {
+	return s.list.SizeInt64()
 }
 
-// LenLines returns the number of objects
+// Lines returns the number of objects
 // contained in the stream.
-func (s *Stream) LenLines() int {
-	return s.list.LenLines()
+func (s *Stream) Lines() int {
+	return s.list.Lines()
 }
 
 func New(path string) (*Stream, error) {
