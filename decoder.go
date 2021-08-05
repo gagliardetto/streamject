@@ -77,19 +77,16 @@ func (s *Stream) Close() error {
 	return s.list.Close()
 }
 
-// Size returns the total size in bytes
-// of the stream.
-func (s *Stream) Size() int {
-	return s.list.Size()
-}
-func (s *Stream) SizeInt64() int64 {
-	return s.list.SizeInt64()
+// NumBytes returns the total size in bytes
+// of the file.
+func (s *Stream) NumBytes() int64 {
+	return s.list.NumBytes()
 }
 
-// Lines returns the number of objects
-// contained in the stream.
-func (s *Stream) Lines() int {
-	return s.list.Lines()
+// NumLines returns the number of objects
+// contained in the file.
+func (s *Stream) NumLines() int64 {
+	return s.list.NumLines()
 }
 
 func New(path string) (*Stream, error) {
@@ -116,7 +113,7 @@ func newStream(
 	marshal MarshalFunc,
 	unmarshal UnmarshalFunc,
 ) (*Stream, error) {
-	list, err := listfile.NewWithoutIndex(path)
+	list, err := listfile.New(path)
 	if err != nil {
 		return nil, err
 	}
@@ -128,8 +125,8 @@ func newStream(
 	return str, nil
 }
 
-func (s *Stream) CreateIndexOnInt(indexName string, intColGetter func(line Line) int) error {
-	return s.list.CreateIndexOnInt(indexName, func(val []byte) int {
+func (s *Stream) CreateIndexByUint64(indexName string, intColGetter func(line Line) uint64) error {
+	return s.list.CreateIndexByUint64(indexName, func(val []byte) uint64 {
 		return intColGetter(Line{
 			body:      val,
 			unmarshal: s.unmarshal,
@@ -137,6 +134,21 @@ func (s *Stream) CreateIndexOnInt(indexName string, intColGetter func(line Line)
 		})
 	})
 }
-func (s *Stream) HasIntByIndex(indexName string, v int) bool {
-	return s.list.HasIntByIndex(indexName, v)
+
+func (s *Stream) HasUint64ByIndex(indexName string, val uint64) bool {
+	return s.list.HasUint64ByIndex(indexName, val)
+}
+
+func (s *Stream) CreateIndexByInt(indexName string, intColGetter func(line Line) int) error {
+	return s.list.CreateIndexByInt(indexName, func(val []byte) int {
+		return intColGetter(Line{
+			body:      val,
+			unmarshal: s.unmarshal,
+			// TODO: add line index, or does not matter?
+		})
+	})
+}
+
+func (s *Stream) HasIntByIndex(indexName string, val int) bool {
+	return s.list.HasIntByIndex(indexName, val)
 }
