@@ -26,7 +26,7 @@ func getJSONFuncs(customTagkey string) (MarshalFunc, UnmarshalFunc) {
 }
 
 type Line struct {
-	index     int64
+	lineNum   int64
 	body      []byte
 	unmarshal UnmarshalFunc
 }
@@ -35,11 +35,11 @@ func (l *Line) Body() []byte {
 	return l.body
 }
 
-// Index returns the line number that this object
+// LineNum returns the line number that this object
 // was scanned from from the file.
-// Starts from 0.
-func (l *Line) Index() int64 {
-	return l.index
+// Starts from 1.
+func (l *Line) LineNum() int64 {
+	return l.lineNum
 }
 
 // Decode can be called only once
@@ -60,15 +60,15 @@ func (s *Stream) Append(v interface{}) error {
 }
 
 func (s *Stream) Iterate(callback func(line Line) bool) error {
-	var index int64
+	lineNum := int64(1)
 	return s.list.IterateLinesAsBytes(func(val []byte) bool {
 		line := Line{
-			index:     index,
+			lineNum:   lineNum,
 			body:      val,
 			unmarshal: s.unmarshal,
 		}
 
-		index++
+		lineNum++
 		return callback(line)
 	})
 }
